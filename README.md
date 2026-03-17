@@ -2,18 +2,20 @@
 
 CLI tool for managing OpenVox/Puppet Server infrastructure via REST APIs.
 
+> **⚠️ Status: Concept Phase** - This project is in the early concept and ideation phase. Nothing is production-ready yet - we are currently collecting ideas and exploring the design space. Feedback and ideas are welcome - feel free to open an [issue](https://github.com/slauger/voxctl/issues).
+
 ## Overview
 
 `voxctl` provides a convenient command-line interface for common Puppet infrastructure operations that would otherwise require manual `curl` calls or `kubectl exec` into server pods.
 
-### Supported Operations
-
-| Command | Description | API |
-|---------|-------------|-----|
-| `voxctl ca` | Certificate lifecycle management (list, sign, revoke, clean, show) | Puppet CA API |
-| `voxctl env` | Environment management (list, cache clear) | Puppet Server API |
-| `voxctl node` | Node management (list, deactivate, purge, facts) | PuppetDB API |
-| `voxctl report` | Report viewing (list, show) | PuppetDB API |
+- 🔐 **Certificate Lifecycle** - List, sign, revoke, clean, and inspect certificates via the Puppet CA API
+- 🌍 **Environment Management** - List environments and flush the environment cache via the Puppet Server API
+- 🖥️ **Node Management** - List, deactivate, and purge nodes, retrieve facts via PuppetDB
+- 📊 **Report Viewing** - List and inspect Puppet run reports from PuppetDB
+- ⚙️ **Kubeconfig-style Configuration** - Multi-server context switching with named servers, credentials, and contexts
+- 🔒 **mTLS Authentication** - Native mutual TLS support for secure API communication
+- 📋 **Flexible Output** - Table, JSON, and YAML output formats for scripting and automation
+- 🔀 **Interactive Context Switching** - fzf-powered interactive picker and `use-context -` for quick switching
 
 ## Installation
 
