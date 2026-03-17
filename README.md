@@ -10,7 +10,7 @@ CLI tool for managing OpenVox/Puppet Server infrastructure via REST APIs.
 
 | Command | Description | API |
 |---------|-------------|-----|
-| `voxctl cert` | Certificate lifecycle management (list, sign, revoke, clean, show) | Puppet CA API |
+| `voxctl ca` | Certificate lifecycle management (list, sign, revoke, clean, show) | Puppet CA API |
 | `voxctl env` | Environment management (list, cache clear) | Puppet Server API |
 | `voxctl node` | Node management (list, deactivate, purge, facts) | PuppetDB API |
 | `voxctl report` | Report viewing (list, show) | PuppetDB API |
@@ -20,32 +20,56 @@ CLI tool for managing OpenVox/Puppet Server infrastructure via REST APIs.
 ### From source
 
 ```bash
-go install github.com/slauger/voxctl@latest
+go install github.com/slauger/voxctl/cmd/voxctl@latest
 ```
 
 ### From releases
 
 Download the latest binary from the [GitHub Releases](https://github.com/slauger/voxctl/releases) page.
 
-## Usage
+## Configuration
 
-All commands authenticate via mTLS using a client certificate and key.
+`voxctl` uses a kubeconfig-style YAML configuration file at `~/.voxctl/config`.
+
+```yaml
+apiVersion: v1
+kind: Config
+current-context: production
+servers:
+  - name: production
+    server: https://puppet.prod.example.com:8140
+    puppetdb: https://puppetdb.prod.example.com:8081
+    ca-cert: /path/to/ca.pem
+credentials:
+  - name: admin
+    client-cert: /path/to/cert.pem
+    client-key: /path/to/key.pem
+contexts:
+  - name: production
+    server: production
+    credential: admin
+```
+
+### Context Management
 
 ```bash
-voxctl --ca-cert /path/to/ca.pem \
-       --client-cert /path/to/cert.pem \
-       --client-key /path/to/key.pem \
-       --server https://puppet:8140 \
-       cert list
+voxctl config get-contexts       # list all contexts
+voxctl config current-context    # show active context
+voxctl config use-context prod   # switch context
+voxctl config use-context -      # switch to previous context
+voxctl config use-context        # interactive picker (requires fzf)
 ```
+
+## Usage
 
 ### Certificate Management
 
 ```bash
-voxctl cert list
-voxctl cert sign <certname>
-voxctl cert revoke <certname>
-voxctl cert clean <certname>
+voxctl ca list
+voxctl ca show <certname>
+voxctl ca sign <certname>
+voxctl ca revoke <certname>
+voxctl ca clean <certname>
 ```
 
 ### Environment Management
@@ -58,20 +82,35 @@ voxctl env cache clear
 ### Node Management
 
 ```bash
-voxctl node list --puppetdb-server https://puppetdb:8081
+voxctl node list
 voxctl node facts <certname>
+voxctl node deactivate <certname>
+voxctl node purge <certname>
 ```
 
-## Configuration
+### Report Management
 
-`voxctl` can be configured via flags, environment variables, or a config file (`~/.voxctl.yaml`).
+```bash
+voxctl report list
+voxctl report list --node <certname>
+voxctl report show <hash>
+```
 
-```yaml
-server: https://puppet:8140
-puppetdb-server: https://puppetdb:8081
-ca-cert: /etc/puppetlabs/puppet/ssl/certs/ca.pem
-client-cert: /etc/puppetlabs/puppet/ssl/certs/admin.pem
-client-key: /etc/puppetlabs/puppet/ssl/private_keys/admin.pem
+### Global Flags
+
+```bash
+--config string    # config file (default: ~/.voxctl/config)
+--context string   # override current-context
+-o, --output       # output format: table, json, yaml (default: table)
+```
+
+## Building
+
+```bash
+make build       # build binary to bin/voxctl
+make test        # run tests
+make lint        # run golangci-lint
+make snapshot    # goreleaser snapshot build
 ```
 
 ## Related Projects
