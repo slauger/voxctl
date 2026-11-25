@@ -67,7 +67,7 @@ func DoRequest(client *http.Client, method, url string, body io.Reader) ([]byte,
 	if err != nil {
 		return nil, 0, fmt.Errorf("executing request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	data, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
 	if err != nil {

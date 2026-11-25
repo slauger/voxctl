@@ -2,6 +2,8 @@ version: 2
 
 builds:
   - main: ./cmd/voxctl
+    flags:
+      - -trimpath
     binary: voxctl
     env:
       - CGO_ENABLED=0
@@ -19,19 +21,19 @@ builds:
       - -X github.com/slauger/voxctl/internal/version.Date={{.Date}}
 
 archives:
-  - format: tar.gz
+  - formats: [tar.gz]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
 
 checksum:
   name_template: "checksums.txt"
 
+# The GitHub release and its notes are created by semantic-release,
+# GoReleaser only attaches the build artifacts.
+release:
+  mode: keep-existing
+
 changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-      - "^ci:"
+  disable: true
