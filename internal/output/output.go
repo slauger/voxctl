@@ -41,8 +41,11 @@ func printJSON(w io.Writer, data interface{}) error {
 func printYAML(w io.Writer, data interface{}) error {
 	enc := yaml.NewEncoder(w)
 	enc.SetIndent(2)
-	defer enc.Close()
-	return enc.Encode(data)
+	if err := enc.Encode(data); err != nil {
+		_ = enc.Close()
+		return err
+	}
+	return enc.Close()
 }
 
 func printTable(w io.Writer, data interface{}, columns []string) error {
@@ -54,11 +57,15 @@ func printTable(w io.Writer, data interface{}, columns []string) error {
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
 
 	if len(columns) > 0 {
-		fmt.Fprintln(tw, strings.Join(columns, "\t"))
+		if _, err := fmt.Fprintln(tw, strings.Join(columns, "\t")); err != nil {
+			return err
+		}
 	}
 
 	for _, row := range rows {
-		fmt.Fprintln(tw, strings.Join(row, "\t"))
+		if _, err := fmt.Fprintln(tw, strings.Join(row, "\t")); err != nil {
+			return err
+		}
 	}
 
 	return tw.Flush()
