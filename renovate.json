@@ -14,6 +14,19 @@
   ],
   "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
+  "customManagers": [
+    {
+      "description": "semantic-release packages installed with npm in the release workflow",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/release\\.yaml$/"
+      ],
+      "matchStrings": [
+        "\\s(?<depName>semantic-release|@semantic-release/[a-z-]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": [
@@ -35,6 +48,16 @@
       ],
       "groupName": "Go version",
       "semanticCommitType": "fix"
+    },
+    {
+      "description": "semantic-release and its plugins together; majors may raise the minimum Node.js version",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "npm"
+      ],
+      "groupName": "semantic-release"
     },
     {
       "description": "Node.js only runs semantic-release; keep majors separate and manual (semantic-release sets the minimum Node version)",
