@@ -11,7 +11,7 @@ LDFLAGS    := -s -w \
               -X $(MODULE)/internal/version.Commit=$(COMMIT) \
               -X $(MODULE)/internal/version.Date=$(DATE)
 
-.PHONY: all build clean test lint vet fmt tidy snapshot install
+.PHONY: all build clean test lint vet vulncheck fmt tidy snapshot install
 
 all: build
 
@@ -32,6 +32,9 @@ fmt:
 
 lint:
 	golangci-lint run
+
+vulncheck:
+	go tool govulncheck ./...
 
 tidy:
 	go mod tidy
