@@ -11,16 +11,16 @@ import (
 )
 
 var (
-	cfgFile    string
-	ctxName    string
-	outputFmt  string
-	cfg        *config.Config
+	cfgFile   string
+	ctxName   string
+	outputFmt string
+	cfg       *config.Config
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "voxctl",
-	Short: "CLI for managing OpenVox/Puppet Server infrastructure",
-	Long:  "voxctl is a command-line tool for managing OpenVox/Puppet Server infrastructure via REST APIs.",
+	Use:          "voxctl",
+	Short:        "CLI for managing OpenVox/Puppet Server infrastructure",
+	Long:         "voxctl is a command-line tool for managing OpenVox/Puppet Server infrastructure via REST APIs.",
 	SilenceUsage: true,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Skip config loading for commands that don't need it.
